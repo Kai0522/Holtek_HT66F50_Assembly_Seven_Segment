@@ -1,0 +1,160 @@
+include HT66F50.inc
+
+ds	.section	'data'
+DEL1  		   DB     	?                   
+DEL2  		   DB    	?                   
+DEL3		   DB		?
+COUNT1         DB       ?
+SEG_PORT       EQU      PC
+SEG_PORTC      EQU      PCC
+PB_SW1         EQU      PD.0
+PB_SW1C        EQU      PDC.0
+PB_SW2         EQU      PD.1
+PB_SW2C        EQU      PDC.1
+cs	.section	at      000h	   'code'
+               ORG      00H
+;==============================================
+MAIN:
+               CALL     SETUP
+               CALL     STUDENT
+               CALL     COUNTDOWN
+               CALL     COUNTUP
+               JMP      $
+;==============================================
+SETUP          PROC
+               CLR      ACERL
+               MOV      A,08H
+               MOV      CP0C,A
+               MOV      CP1C,A
+               CLR      SEG_PORTC
+               SET      PB_SW1C
+               SET      PB_SW2C
+               MOV      A,OFFSET TAB_7_SEG
+               MOV      TBLP,A
+               MOV      A,10
+               MOV      COUNT1,A
+               RET
+SETUP          ENDP               
+;==============================================
+STUDENT        PROC
+               TABRDL   SEG_PORT
+               SZ       PB_SW1
+               JMP      $-1
+               CALL     DELAY
+               SNZ       PB_SW1
+               JMP      $-1
+               
+               INC      TBLP
+               INC      TBLP
+               INC      TBLP
+               TABRDL   SEG_PORT
+               CALL     DELAY
+               
+               INC      TBLP
+               INC      TBLP
+               TABRDL   SEG_PORT
+               CALL     DELAY
+               
+               DEC      TBLP
+               DEC      TBLP
+               DEC      TBLP
+               TABRDL   SEG_PORT
+               CALL     DELAY
+               
+               DEC      TBLP
+               DEC      TBLP
+               TABRDL   SEG_PORT
+               CALL     DELAY
+               
+               INC      TBLP
+               INC      TBLP
+               INC      TBLP
+               INC      TBLP
+               TABRDL   SEG_PORT
+               CALL     DELAY
+               
+               DEC      TBLP
+               DEC      TBLP
+               DEC      TBLP
+               TABRDL   SEG_PORT
+               CALL     DELAY
+               
+               INC      TBLP
+               INC      TBLP
+               INC      TBLP
+               INC      TBLP
+               INC      TBLP
+               INC      TBLP
+               INC      TBLP
+               INC      TBLP
+               INC      TBLP               
+               SZ       PB_SW1
+               JMP      $-1
+               CALL     DELAY
+               SNZ       PB_SW1
+               JMP      $-1               
+               TABRDL   SEG_PORT
+               DEC      TBLP
+               RET
+STUDENT        ENDP
+;==================================================               
+COUNTDOWN      PROC
+               TABRDL   SEG_PORT               
+               SZ       PB_SW2
+               JMP      $-1
+               CALL     DELAY
+               SNZ       PB_SW2
+               JMP      $-1
+               DEC      TBLP
+               SDZ      COUNT1
+               JMP      COUNTDOWN
+               MOV      A,9
+               MOV      COUNT1,A
+               INC      TBLP
+               INC		TBLP
+               RET
+COUNTDOWN      ENDP
+;==================================================               
+COUNTUP        PROC
+               TABRDL   SEG_PORT               
+               SZ       PB_SW2
+               JMP      $-1
+               CALL     DELAY
+               SNZ       PB_SW2
+               JMP      $-1
+               INC      TBLP
+               SDZ      COUNT1
+               JMP      COUNTUP
+               RET
+COUNTUP        ENDP
+;==================================================
+DELAY          PROC
+               MOV      A,5
+               MOV      DEL1,A
+DEL_1:         MOV      A,150
+               MOV      DEL2,A
+DEL_2:         MOV      A,220
+               MOV      DEL3,A
+DEL_3:         SDZ      DEL3
+               JMP      DEL_3
+               SDZ      DEL2
+               JMP      DEL_2
+               SDZ      DEL1
+               JMP      DEL_1
+               RET
+DELAY          ENDP
+;===================================================
+               ORG      LASTPAGE
+TAB_7_SEG:
+               DC       03FH
+               DC       006H
+               DC       05BH
+               DC       04FH
+               DC       066H
+               DC       06DH
+               DC       07DH
+               DC       007H
+               DC       07FH
+               DC       067H
+               END
+;===================================================    
